@@ -67,6 +67,72 @@ int _printf(const char *format, ...)
 				write(1, num_str, len);
 				count += len;
 			}
+			else if (specifier == 'u')
+			{
+				unsigned int num = va_arg(args, unsigned int);
+				char num_str[20];
+				int len = 0;
+
+				sprintf(num_str, "%u", num);
+
+				while (num_str[len] != '\0')
+				{
+					len++;
+				}
+
+				write(1, num_str, len);
+				count += len;
+			}
+			else if (specifier == 'o')
+			{
+				unsigned int num = va_arg(args, unsigned int);
+
+				char num_str[20];
+				int len = 0;
+
+				sprintf(num_str, "%o", num);
+					while (num_str[len] != '\0')
+					{
+						len++;
+					}
+				write(1, num_str, len);
+				count += len;
+			}
+			else if (specifier == 'x' || specifier == 'X')
+			{
+				unsigned int num = va_arg(args, unsigned int);
+				char num_str[20];
+				int len = 0;
+
+				sprintf(num_str, "%x", num); /**for low_case,use"%x";for upp_case,use"%X"*/
+				while (num_str[len] != '\0')
+				{
+					len++;
+				}
+				write(1, num_str, len);
+				count += len;
+			}
+			else if (specifier == 'p')
+			{
+				void *ptr = va_arg(args, void *);
+				char addr_str[20];
+				int len = 0;
+
+				sprintf(addr_str, "%p", (void *)ptr);
+
+				while (addr_str[len] != '\0')
+				{
+					len++;
+				}
+
+				write(1, addr_str, len);
+				count += len;
+			}
+			else if (specifier == 'r')
+			{
+				write(1, "[%r]", 4);
+				count += 4;
+			}
 		}
 		else
 		{
@@ -81,4 +147,3 @@ int _printf(const char *format, ...)
 
 	return (count);
 }
-
