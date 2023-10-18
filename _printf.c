@@ -19,16 +19,15 @@ int format_specifier(const char *format, int *i, va_list args, int *len)
 	};
 
 	int found_match = 0, j;
-	char n_c;
+	char n_ch;
 
 	for (j = 0; j < 14; j++)
 	{
-		n_c = format[*i + 1];
-		if (n_c == ' ' || n_c == '+' || n_c == '#' || n_c == '0' || n_c == '-')
+		n_ch = format[*i + 1];
+		if (n_ch == ' ' || n_ch == '+' || n_ch == '#' || n_ch == '0' || n_ch == '-')
+			n_ch = format[*i + 2];
 
-			n_c = format[*i + 2];
-
-		if (format[*i] == '%' && n_c && n_c == m[j].id[1])
+		if (format[*i] == '%' && n_ch && n_ch == m[j].id[1])
 		{
 			*len += m[j].f(args);
 			found_match = 1;
@@ -38,14 +37,13 @@ int format_specifier(const char *format, int *i, va_list args, int *len)
 
 	if (found_match)
 	{
-		n_c = format[*i + 1];
-		if (n_c == '+' || n_c == ' ' || n_c == '#' || n_c == '0' || n_c == '-')
+		n_ch = format[*i + 1];
+		if (n_ch == '+' || n_ch == ' ' || n_ch == '#' || n_ch == '0' || n_ch == '-')
 			*i += 3;
 		else
 			*i += 2;
 
 		return (1);
-
 	}
 
 	return (0);
@@ -53,7 +51,7 @@ int format_specifier(const char *format, int *i, va_list args, int *len)
 
 /**
  * _printf - my printf function.
- * @format: format to a string.
+ * @format: format string.
  *
  * Return: length of printed string, or -1 if an error.
  */
@@ -79,4 +77,5 @@ int _printf(const char *format, ...)
 
 	va_end(args);
 	return (len);
+
 }
