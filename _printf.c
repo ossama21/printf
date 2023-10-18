@@ -19,15 +19,15 @@ int format_specifier(const char *format, int *i, va_list args, int *len)
 	};
 
 	int found_match = 0, j;
-	char next_char;
+	char n_c;
 
 	for (j = 0; j < 14; j++)
 	{
-		next_char = format[*i + 1];
-		if (n_ch == ' ' || n_ch == '+' || n_ch == '#' || n_ch == '0' || n_ch == '-')
-			next_char = format[*i + 2];
+		n_c = format[*i + 1];
+		if (n_c == ' ' || n_c == '+' || n_c == '#' || n_c == '0' || n_c == '-')
+			n_c = format[*i + 2];
 
-		if (format[*i] == '%' && next_char && next_char == m[j].id[1])
+		if (format[*i] == '%' && n_c && n_c == m[j].id[1])
 		{
 			*len += m[j].f(args);
 			found_match = 1;
@@ -37,8 +37,8 @@ int format_specifier(const char *format, int *i, va_list args, int *len)
 
 	if (found_match)
 	{
-		next_char = format[*i + 1];
-		if (next_char == '+' || next_char == ' ' || next_char == '#' || next_char == '0' || next_char == '-')
+		n_c = format[*i + 1];
+		if (n_c == '+' || n_c == ' ' || n_c == '#' || n_c == '0' || n_c == '-')
 			*i += 3;
 		else
 			*i += 2;
