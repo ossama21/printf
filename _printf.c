@@ -1,149 +1,80 @@
-#include <stdio.h>
 #include "main.h"
-#include <stdarg.h>
-#include <unistd.h>
 
 /**
- * _printf - Custom printf function
- * @format: The format string
- *
- * Return: The number of characters printed.
+ * format_specifier - Handle format specifiers for printf.
+ * @format: The format string.
+ * @i: The current index in the format string.
+ * @args: The va_list containing arguments.
+ * @len: Pointer to the length of printed string.
+ * Return: 1 if a format specifier was matched, 0 otherwise.
  */
-int _printf(const char *format, ...);
+int format_specifier(const char *format, int *i, va_list args, int *len)
+{
+	convert_match m[] = {
+		{"%s", printf_string}, {"%c", printf_char}, {"%%", printf_37},
+		{"%d", printf_integer}, {"%i", printf_integer}, {"%b", printf_binary},
+		{"%u", printf_unsigned}, {"%o", printf_octal}, {"%x", printf_hexadecimal},
+		{"%X", printf_upper_hexadecimal}, {"%S", printf_S}, {"%p", printf_pointer},
+		{"%r", printf_revstr}, {"%R", printf_rot13}
+	};
 
+	int found_match = 0, j;
+	char next_char;
+
+	for (j = 0; j < 14; j++)
+	{
+		next_char = format[*i + 1];
+		if (n_ch == ' ' || n_ch == '+' || n_ch == '#' || n_ch == '0' || n_ch == '-')
+			next_char = format[*i + 2];
+
+		if (format[*i] == '%' && next_char && next_char == m[j].id[1])
+		{
+			*len += m[j].f(args);
+			found_match = 1;
+			break;
+		}
+	}
+
+	if (found_match)
+	{
+		next_char = format[*i + 1];
+		if (next_char == '+' || next_char == ' ' || next_char == '#' || next_char == '0' || next_char == '-')
+			*i += 3;
+		else
+			*i += 2;
+
+		return (1);
+	}
+
+	return (0);
+}
+
+/**
+ * _printf - my printf function.
+ * @format: format string.
+ *
+ * Return:length of printed string,or -1 if an error
+ */
 int _printf(const char *format, ...)
-
 {
 	va_list args;
-	char specifier;
-	int count = 0;
+	int i = 0, len = 0;
 
 	va_start(args, format);
+	if (format == NULL || (format[0] == '%' && format[1] == '\0'))
+		return (-1);
 
-	while (*format)
+	while (format[i] != '\0')
 	{
-		if (*format == '%')
+		if (format[i] == '%' && format[i + 1])
 		{
-			format++;
-			specifier = *format;
-			if (specifier == 'c')
-			{
-				char c = (char)va_arg(args, int);
-
-				write(1, &c, 1);
-				count++;
-			}
-			else if (specifier == 's')
-			{
-				char *str = va_arg(args, char *);
-				int len = 0;
-
-				while (str[len] != '\0')
-				{
-					len++;
-				}
-
-				write(1, str, len);
-				count += len;
-			}
-			else if (specifier == '%')
-			{
-				write(1, "%", 1);
-				count++;
-			}
-			else if (specifier == 'd' || specifier == 'i')
-			{
-				int num = va_arg(args, int);
-				char num_str[20];
-				int len = 0;
-
-				sprintf(num_str, "%d", num);
-
-				while (num_str[len] != '\0')
-				{
-					len++;
-				}
-
-				write(1, num_str, len);
-				count += len;
-			}
-			else if (specifier == 'u')
-			{
-				unsigned int num = va_arg(args, unsigned int);
-				char num_str[20];
-				int len = 0;
-
-				sprintf(num_str, "%u", num);
-
-				while (num_str[len] != '\0')
-				{
-					len++;
-				}
-
-				write(1, num_str, len);
-				count += len;
-			}
-			else if (specifier == 'o')
-			{
-				unsigned int num = va_arg(args, unsigned int);
-
-				char num_str[20];
-				int len = 0;
-
-				sprintf(num_str, "%o", num);
-					while (num_str[len] != '\0')
-					{
-						len++;
-					}
-				write(1, num_str, len);
-				count += len;
-			}
-			else if (specifier == 'x' || specifier == 'X')
-			{
-				unsigned int num = va_arg(args, unsigned int);
-				char num_str[20];
-				int len = 0;
-
-				sprintf(num_str, "%x", num); /**for low_case,use"%x";for upp_case,use"%X"*/
-				while (num_str[len] != '\0')
-				{
-					len++;
-				}
-				write(1, num_str, len);
-				count += len;
-			}
-			else if (specifier == 'p')
-			{
-				void *ptr = va_arg(args, void *);
-				char addr_str[20];
-				int len = 0;
-
-				sprintf(addr_str, "%p", (void *)ptr);
-
-				while (addr_str[len] != '\0')
-				{
-					len++;
-				}
-
-				write(1, addr_str, len);
-				count += len;
-			}
-			else if (specifier == 'r')
-			{
-				write(1, "[%r]", 4);
-				count += 4;
-			}
-		}
-		else
-		{
-			write(1, format, 1);
-			count++;
+			if (format_specifier(format, &i, args, &len))
+				continue;
 		}
 
-		format++;
+		print_normal(format, &i, &len);
 	}
 
 	va_end(args);
-
-	return (count);
+	return (len);
 }
